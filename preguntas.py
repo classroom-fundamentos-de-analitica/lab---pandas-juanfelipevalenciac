@@ -211,7 +211,7 @@ def pregunta_11():
             count +=1
         return result
 
-    df = tbl1.groupby('_c0').agg({'_c4': lambda x: my_func(x)})
+    df = tbl1.groupby('_c0').agg({'_c4': lambda x: my_func(x)}).reset_index()
     return df
 
 
