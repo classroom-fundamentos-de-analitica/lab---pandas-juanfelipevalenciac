@@ -22,8 +22,7 @@ def pregunta_01():
     40
 
     """
-    return
-
+    return len(tbl0)
 
 def pregunta_02():
     """
@@ -33,7 +32,8 @@ def pregunta_02():
     4
 
     """
-    return
+    return len(tbl0.columns)
+
 
 
 def pregunta_03():
@@ -50,7 +50,7 @@ def pregunta_03():
     Name: _c1, dtype: int64
 
     """
-    return
+    return tbl0['_c1'].value_counts().sort_index(ascending=True)
 
 
 def pregunta_04():
@@ -65,7 +65,7 @@ def pregunta_04():
     E    4.785714
     Name: _c2, dtype: float64
     """
-    return
+    return tbl0.groupby(['_c1'])['_c2'].mean()
 
 
 def pregunta_05():
@@ -82,8 +82,7 @@ def pregunta_05():
     E    9
     Name: _c2, dtype: int64
     """
-    return
-
+    return tbl0.groupby(['_c1'])['_c2'].max()
 
 def pregunta_06():
     """
@@ -94,8 +93,9 @@ def pregunta_06():
     ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 
     """
-    return
-
+    list = tbl1['_c4'].unique()
+    list = sorted([x.upper() for x in list])
+    return list
 
 def pregunta_07():
     """
@@ -110,7 +110,7 @@ def pregunta_07():
     E    67
     Name: _c2, dtype: int64
     """
-    return
+    return tbl0.groupby(["_c1"])['_c2'].sum()
 
 
 def pregunta_08():
@@ -128,7 +128,9 @@ def pregunta_08():
     39   39   E    5  1998-01-26    44
 
     """
-    return
+    tbl0['suma'] = tbl0['_c0']+tbl0['_c2']
+    return tbl0
+
 
 
 def pregunta_09():
@@ -146,7 +148,9 @@ def pregunta_09():
     39   39   E    5  1998-01-26  1998
 
     """
-    return
+    tbl0['year'] = tbl0._c3.str[0:4]
+    return tbl0
+
 
 
 def pregunta_10():
@@ -163,7 +167,20 @@ def pregunta_10():
     3   D                  1:2:3:5:5:7
     4   E  1:1:2:3:3:4:5:5:5:6:7:8:8:9
     """
-    return
+    def my_func(data):
+        result = ""
+        count = 0
+        data = data.sort_values()
+        for x in data:
+            if count<len(data)-1:
+                result += str(x)+":"
+            else:
+                result += str(x)
+            count +=1
+        return result
+
+    df = tbl0.groupby('_c1').agg({'_c2': lambda x: my_func(x)})
+    return df
 
 
 def pregunta_11():
@@ -182,7 +199,21 @@ def pregunta_11():
     38   38      d,e
     39   39    a,d,f
     """
-    return
+    def my_func(data):
+        result = ""
+        count = 0
+        data = data.sort_values()
+        for x in data:
+            if count<len(data)-1:
+                result += str(x)+","
+            else:
+                result += str(x)
+            count +=1
+        return result
+
+    df = tbl1.groupby('_c0').agg({'_c4': lambda x: my_func(x)}).reset_index()
+    return df
+
 
 
 def pregunta_12():
@@ -200,7 +231,22 @@ def pregunta_12():
     38   38                    eee:0,fff:9,iii:2
     39   39                    ggg:3,hhh:8,jjj:5
     """
-    return
+    def my_func(d1,d2):
+        result = ""
+        count = 0
+        new_dict = dict(zip(d1, d2))
+        for dic in sorted(new_dict):
+            if count<len(new_dict)-1:
+                result += str(dic)+":"+str(new_dict[dic])+","
+            else:
+                result += str(dic)+":"+str(new_dict[dic])
+            count +=1
+        return result
+    
+    df2 = tbl2.groupby('_c0')['_c5a','_c5b'].agg(list).reset_index()
+    df2['_c5'] = df2.apply(lambda x: my_func(x['_c5a'], x['_c5b']),axis=1)
+    result = df2[['_c0','_c5']]
+    return result
 
 
 def pregunta_13():
@@ -217,4 +263,7 @@ def pregunta_13():
     E    275
     Name: _c5b, dtype: int64
     """
-    return
+    df1 = tbl0.join(tbl2.set_index('_c0'), on='_c0')
+
+    return df1.groupby('_c1')['_c5b'].sum()
+
